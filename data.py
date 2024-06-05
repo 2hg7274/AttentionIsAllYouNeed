@@ -3,14 +3,14 @@ import pandas as pd
 from torch.utils.data import Dataset, DataLoader, random_split
 from transformers import AutoTokenizer
 
-tokenizer = AutoTokenizer.from_pretrained(tokenizer_path)
+tokenizer = AutoTokenizer.from_pretrained(tokenizer_path, add_bos_token=False)
 tokenizer.model_max_length = max_len
-tokenizer.pad_token = tokenizer.eos_token
+tokenizer.add_special_tokens({"pad_token":"[PAD]"})
+
 
 class CustomDataset(Dataset):
-    def __init__(self, csv_path):
-        self.df = pd.read_csv(csv_path, encoding='utf-8')
-
+    def __init__(self, path):
+        self.df = pd.read_csv(path, encoding='utf-8')
         self.src = self.df['en']
         self.trg = self.df['ko']
 
@@ -18,12 +18,14 @@ class CustomDataset(Dataset):
         return len(self.df)
     
     def __getitem__(self, idx):
-        src = tokenizer(self.src.iloc[idx], padding='max_length', truncation=True, return_tensors='pt')
-        trg = tokenizer(self.trg.iloc[idx], padding='max_length', truncation=True, return_tensors='pt')
-        
-        src_ids = src['input_ids'].squeeze(0)
-        trg_ids = trg['input_ids'].squeeze(0)
-        
+        batch_src = self.src.iloc[idx]
+        batch_trg = tokenizer.bos_token + self.trg.iloc[idx]
+
+        tokenized_src = tokenizer(batch_src, padding='max_length', truncation=True, return_tensors="pt")
+        tokenized_trg = tokenizer(batch_trg, padding='max_length', truncation=True, return_tensors="pt")
+
+        src_ids = tokenized_src['input_ids'].squeeze(0)
+        trg_ids = tokenized_trg['input_ids'].squeeze(0)
         return src_ids, trg_ids
 
 
