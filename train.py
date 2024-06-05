@@ -168,6 +168,7 @@ def train(model, iterator, optimizer, criterion, clip, global_step):
         if (step+1) % gradient_accumulation_steps == 0:
             torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
             optimizer.step()
+            optimizer.zero_grad()
         
         lr = get_lr(optimizer)
         writer.add_scalar(f"LearningRate", lr, global_step=global_step)
