@@ -8,7 +8,6 @@ import math
 from torch import nn, optim
 from torch.optim import Adam, AdamW
 from torch.utils.tensorboard import SummaryWriter
-from transformers import AutoTokenizer
 from models.model.transformer import Transformer
 import warnings
 warnings.filterwarnings('ignore')
@@ -79,14 +78,6 @@ def get_lr(optimizer):
     
 
 
-
-"""
-Tokenizer
-"""
-tokenizer = AutoTokenizer.from_pretrained(tokenizer_path, add_bos_token=False)
-tokenizer.model_max_length = max_len
-tokenizer.add_special_tokens({"pad_token":"[PAD]"})
-
 """
 Model
 """
@@ -123,7 +114,7 @@ adamw_optimizer = AdamW(params=model.parameters(),
 """
 Learning Rate Scheduler
 """
-reducelr_scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer=adamw_optimizer,
+reducelr_scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer=adam_optimizer,
                                                  verbose=True,
                                                  factor=factor,
                                                  patience=patience)
@@ -234,7 +225,7 @@ def run(total_epoch, best_loss):
     eval_global_step = 0
     for step in range(total_epoch):
         start_time = time.time()
-        train_loss, global_step = train(model, train_iter, adamw_optimizer, criterion, clip, global_step)
+        train_loss, global_step = train(model, train_iter, adam_optimizer, criterion, clip, global_step)
         valid_loss, bleu, eval_global_step = evaluate(model, valid_iter, criterion, eval_global_step)
         end_time = time.time()
 

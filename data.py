@@ -3,6 +3,9 @@ import pandas as pd
 from torch.utils.data import Dataset, DataLoader, random_split
 from transformers import AutoTokenizer
 
+"""
+Tokenizer
+"""
 tokenizer = AutoTokenizer.from_pretrained(tokenizer_path, add_bos_token=False)
 tokenizer.model_max_length = max_len
 tokenizer.add_special_tokens({"pad_token":"[PAD]"})
