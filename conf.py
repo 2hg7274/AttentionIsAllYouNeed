@@ -19,13 +19,13 @@ drop_prob = 0.2
 # Trainig configurations
 epoch = 100
 gradient_accumulation_steps = 4
-init_lr = 2e-5 
+init_lr = 2e-4 
 weight_decay = 5e-4
 adam_eps = 5e-9
 factor = 0.9
-patience = 10
+patience = 2
 clip = 1.0
-warmup = 300
+warmup = 5
 T_mult = 2
 eta_min = 0
 inf = float('inf')
